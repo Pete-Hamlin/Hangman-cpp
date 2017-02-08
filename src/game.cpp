@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <array>
 #include <stdlib.h>
 #include <stdio.h>
 using namespace std;
@@ -11,7 +12,21 @@ using namespace std;
 
 //Globals
 #define FILELENGTH 1386     // IF words.txt IS EDITTED, THIS VALUE MUST BE UPDATED!!
-#define GAMELENGTH 8
+#define GAMELENGTH 9        // Can be changed to 11 if the 2 elements in stage are uncommented
+
+// The gallows - Looks scary but just draws the acutal hangman in the terminal interface
+array<string, GAMELENGTH> stage = { "",
+                                    "________\n",
+                                    "|\n|\n|\n|\n|\n|_______\n",
+                                    "_______\n|/\n|\n|\n|\n|\n|______\n",
+                                    "_______\n|/    |\n|\n|\n|\n|\n|______\n",
+                                    "_______\n|/    |\n|     O\n|\n|\n|\n|______\n",
+                                    "_______\n|/    |\n|     O\n|     |\n|\n|\n|______\n",
+                                    //"_______\n|/    |\n|     O\n|    /|\n|\n|\n|______\n",
+                                    "_______\n|/    |\n|     O\n|    /|\\\n|\n|\n|______\n",
+                                    //"_______\n|/    |\n|     O\n|    /|\\\n|    /\n|\n|_______\n",
+                                    "_______\n|/    |\n|     O\n|    /|\\\n|    / \\\n|\n|_______\n"
+                                  };
 
 /* Game_shell */
 //Constructor
@@ -46,6 +61,7 @@ void Game_shell::init() {
   session.genWord();
   while (_attempts < GAMELENGTH) {
     /* Main game logic */
+    cout << endl << stage.at(_attempts) << endl << endl;
     session.display();
     if (session.playerGuess() != true) {
       _attempts++;
