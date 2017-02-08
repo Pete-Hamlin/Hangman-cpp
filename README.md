@@ -1,6 +1,6 @@
 # HANGMAN #
 
-A simple terminal based Hangman game written in C++. Built on Linux. Mostly just an experimental proof of concepot, but works pretty nicely as a time killer for the bored.
+A simple terminal based Hangman game written in C++. Built on Linux. Mostly just an experimental proof of concept, but works pretty nicely as a time killer for the bored.
 
 ## Design ##
 
