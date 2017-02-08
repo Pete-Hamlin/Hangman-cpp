@@ -59,12 +59,12 @@ void Game_shell::init() {
   // Main game element - ideally refactored into a seperate function at a later date
   Game_data session(select);
   session.genWord();
-  while (_attempts < GAMELENGTH) {
+  while (_attempts < GAMELENGTH - 1) {
     /* Main game logic */
-    cout << endl << stage.at(_attempts) << endl << endl;
     session.display();
     if (session.playerGuess() != true) {
       _attempts++;
+      cout << endl << stage.at(_attempts) << endl << endl;
       //cout << _attempts;        //DEBUG
     }
     if (session.endGame() == true) {
@@ -139,22 +139,26 @@ void Game_data::showAns() {
 
 // Function run on each guessing player turn
 bool Game_data::playerGuess() {
-  bool hit = false;
   cout << "\n\nPlease guess a letter (Only the first character provided will be read):" << endl;
   cin >> _guess;
-  for (unsigned int i = 0; i < _partialSol.size(); i++) {
-    if (_guess == _word.at(i)) {
-      _partialSol.at(i) = _guess;
-      hit = true;
+  for (unsigned int i = 0; i < _incorrect.size(); i++) {
+    if (_guess == _incorrect.at(i)) {
+      cout << "\nYou've already guessed that letter!" << endl;
+      return true;
     }
   }
-  if (hit == true) {
-    return true;
+  for (unsigned int i = 0; i < _partialSol.size(); i++) {
+    if (_guess == _partialSol.at(i)) {
+      cout << "\nYou've already guessed that letter!" << endl;
+      return true;
+    }
+    else if (_guess == _word.at(i)) {
+      _partialSol.at(i) = _guess;
+      return true;
+    }
   }
-  else {
-    _incorrect.push_back(_guess);
-    return false;
-  }
+  _incorrect.push_back(_guess);
+  return false;
 }
 
 // Check if whole word has been guessed - otherwise continue
