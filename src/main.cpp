@@ -13,8 +13,6 @@ using namespace std;
 
 int main() {
   char restart;
-
-  HideStdinKeystrokes();
   srand (time(NULL));
   Game_shell game;
 
@@ -28,6 +26,5 @@ int main() {
     }
   }
   //Clean up - re-enable echo
-  ShowStdinKeystrokes();
   return 0;
 }

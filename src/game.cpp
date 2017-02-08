@@ -98,8 +98,10 @@ Game_data::Game_data(int choice) {
 // Generates the word to guess, either via user input or random selecting a word from words
 void Game_data::genWord() {
   if (multiplayer) {
+    HideStdinKeystrokes();
     cout << "\nPlayer 1 - Please provide a word for player 2 to guess:";
     cin >> _word;
+    ShowStdinKeystrokes();
     //cout << word;     //DEBUG
   }
   else {
