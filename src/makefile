@@ -2,7 +2,7 @@ CC=g++
 CFLAGS=-c -Wall -std=c++11
 LDFLAGS=
 
-SRC=main.cpp game.cpp
+SRC=main.cpp game.cpp term.cpp
 OBJ=$(SRC:.cpp=.o)
 TARGET=game
 

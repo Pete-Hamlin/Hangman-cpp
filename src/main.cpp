@@ -13,8 +13,11 @@ using namespace std;
 
 int main() {
   char restart;
+
+  HideStdinKeystrokes();
   srand (time(NULL));
   Game_shell game;
+
   for (;;) {
     game.init();
     // After game ends, offer chance to replay
@@ -24,5 +27,7 @@ int main() {
       break;
     }
   }
+  //Clean up - re-enable echo
+  ShowStdinKeystrokes();
   return 0;
 }

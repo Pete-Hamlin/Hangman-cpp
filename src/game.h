@@ -1,3 +1,7 @@
+//Hide terminal inputs
+void HideStdinKeystrokes();
+void ShowStdinKeystrokes();
+
 /* Main game class - this will start, manage and end the game instance. Data required for the game is stored in the Game_data class. */
 class Game_shell {
 
