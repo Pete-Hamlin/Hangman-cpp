@@ -1,11 +1,20 @@
-CPP=g++
+CC=g++
+CFLAGS=-c -Wall
+LDFLAGS=
+
+SRC=main.cpp game.cpp
+OBJ=$(SRC:.cpp=.o)
+TARGET=game
+
 RM=rm -f
 
-SRC=main.cpp
-OBJ=game
+all: $(SRC) $(TARGET)
 
-solve: $(SRC)
-	$(CPP) -o $(OBJ) $(SRC)
+$(TARGET): $(OBJ)
+	$(CC) $(LDFLAGS) $(OBJ) -o $@
+
+.cpp.o:
+	$(CC) $(CFLAGS) $< -o $@
 
 clean:
-	$(RM) $(OBJ)
+	$(RM) $(TARGET) $(OBJ)
