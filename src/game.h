@@ -20,6 +20,7 @@ class Game_data {
     bool endGame();
   private:
     char _guess;
+    string _incorrect;
     string _partialSol;
     string _word;
 

@@ -23,6 +23,8 @@ Game_shell::Game_shell() {
 void Game_shell::init() {
   int options = 3;
   int select;
+
+  _attempts = 0;
   // Add additional options here (Exit should always be the last option)
   cout <<   "\n!!HANGMAN!!\n\nSelect an option:" <<
             "\n1.Computer Opponent" <<
@@ -50,17 +52,18 @@ void Game_shell::init() {
       //cout << _attempts;        //DEBUG
     }
     if (session.endGame() == true) {
-      cout << "Congratulations - you won!!" << endl;
+      cout << "\nCongratulations - you won!!" << endl;
       session.showAns();
       return;
     }
   }
-  cout << "GAME OVER!!!" << endl;
+  cout << "\nGAME OVER!!!" << endl;
   session.showAns();
 }
 
 // Constructor
 Game_data::Game_data(int choice) {
+  _partialSol = "";
   // SWitch statement allows adding additional options later on
   switch(choice) {
     case 1 :
@@ -97,10 +100,19 @@ void Game_data::genWord() {
       }
     }
   }
+  _partialSol.append(_word.size(), '.');
+  //cout << _partialSol;   //DEBUG
 }
 
 // Displays current solution, incorrect guess and how badly the man has been hanged so far
 void Game_data::display() {
+  cout << endl;
+  cout << _partialSol << endl;
+  cout << "\nIncorrect guesses: ";
+  for (unsigned int i = 0; i < _incorrect.size(); i++) {
+      cout << _incorrect.at(i) <<", ";
+  }
+  cout << endl;
   return;
 }
 
@@ -111,9 +123,22 @@ void Game_data::showAns() {
 
 // Function run on each guessing player turn
 bool Game_data::playerGuess() {
-  cout << "Please guess a letter (Only the first character provided will be read):" << endl;
+  bool hit = false;
+  cout << "\n\nPlease guess a letter (Only the first character provided will be read):" << endl;
   cin >> _guess;
-  return false;
+  for (unsigned int i = 0; i < _partialSol.size(); i++) {
+    if (_guess == _word.at(i)) {
+      _partialSol.at(i) = _guess;
+      hit = true;
+    }
+  }
+  if (hit == true) {
+    return true;
+  }
+  else {
+    _incorrect.push_back(_guess);
+    return false;
+  }
 }
 
 // Check if whole word has been guessed - otherwise continue
