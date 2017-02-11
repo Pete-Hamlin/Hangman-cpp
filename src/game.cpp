@@ -143,24 +143,26 @@ void Game_data::showAns() {
 bool Game_data::playerGuess() {
   cout << "\n\nPlease guess a letter (Only the first character provided will be read):" << endl;
   cin >> _guess;
+  bool ans = false;
   for (unsigned int i = 0; i < _incorrect.size(); i++) {
     if (_guess == _incorrect.at(i)) {
       cout << "\nYou've already guessed that letter!" << endl;
-      return true;
     }
   }
   for (unsigned int i = 0; i < _partialSol.size(); i++) {
     if (_guess == _partialSol.at(i)) {
       cout << "\nYou've already guessed that letter!" << endl;
-      return true;
+      ans = true;
     }
     else if (_guess == _word.at(i)) {
       _partialSol.at(i) = _guess;
-      return true;
+      ans = true;
     }
   }
-  _incorrect.push_back(_guess);
-  return false;
+  if (ans != true) {
+    _incorrect.push_back(_guess);
+  }
+  return ans;
 }
 
 // Check if whole word has been guessed - otherwise continue
