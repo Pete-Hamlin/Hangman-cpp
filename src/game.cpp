@@ -31,7 +31,13 @@ array<string, GAMELENGTH> stage = { "",
 /* Game_shell */
 //Constructor
 Game_shell::Game_shell() {
-  _attempts = 0;
+  _p1._score = 0;
+  _p1._name = "Player 1";
+  _p1._guess = true;
+  _p2._score = 0;
+  _p2._name = "Player 2";
+  _guess._score = 0;
+  _word._score = 0;
 }
 
 
@@ -42,10 +48,11 @@ void Game_shell::init() {
   _attempts = 0;
   // Add additional options here (Exit should always be the last option)
   cout <<   "\n!!HANGMAN!!\n\nSelect an option:" <<
-            "\n1.Computer Opponent" <<
-            "\n2.Human Opponent" <<
+            "\n1.Single Player" <<
+            "\n2.Multiplayer" <<
             "\n3.Exit" << endl;
   cin >> select;
+  option(select);
   //Makes sure play input is a valid option
   if (select < 1 || select > options) {
     cout << "\nPlease select a valid input option!" << endl;
@@ -57,8 +64,14 @@ void Game_shell::init() {
   }
 
   // Main game element - ideally refactored into a seperate function at a later date
-  Game_data session(select);
-  session.genWord();
+  Game_data session;
+  playerSwitch();
+  if (_multiplayer != true) {
+      session.genWord();
+  }
+  else {
+    session.addWord(_guess, _word);
+  }
   while (_attempts < GAMELENGTH - 1) {
     /* Main game logic */
     session.display();
@@ -68,56 +81,103 @@ void Game_shell::init() {
       //cout << _attempts;        //DEBUG
     }
     if (session.endGame() == true) {
-      cout << "\nCongratulations - you won!!" << endl;
+      cout << "\nCongratulations " << _guess._name << "- You won!!" << endl;
+      playerScore(_guess, _word);
       session.showAns();
       return;
     }
   }
-  cout << "\nGAME OVER!!!" << endl;
+  cout << "\nGAME OVER " << _guess._name << "- You lose!!!" << endl;
+  playerScore(_word, _guess);
   session.showAns();
 }
 
-// Constructor
-Game_data::Game_data(int choice) {
-  _partialSol = "";
+void Game_shell::option(int choice) {
   // SWitch statement allows adding additional options later on
   switch(choice) {
     case 1 :
       cout << "\nSelected CPU opponent!" << endl;
-      multiplayer = false;
+      _multiplayer = false;
+      _p2._active = false;
+      _word._active = false;
       break;
     case 2 :
       cout << "\nSelected human opponent!" << endl;
-      multiplayer = true;
+      _multiplayer = true;
+      _p2._active = true;
       break;
     default :
-      throw "\nUnrecognised input... Congrats, you broke it.";
+      throw "\nUnrecognised input... Congrats, you broke it.\n";
   }
+}
+
+//Switch the active player
+void Game_shell::playerSwitch() {
+  if (_p1._guess == true) {
+//Update scores
+    _p1._score = _guess._score;
+    _p2._score = _word._score;
+    _guess = _p1;
+    _word = _p2;
+    //Sets up for next iteration
+    _p1._guess = false;
+    _p2._guess = true;
+  }
+  else {
+    _p2._score = _guess._score;
+    _p1._score = _word._score;
+    _guess = _p2;
+    _word = _p1;
+    //Sets up for next iteration
+    _p2._guess = false;
+    _p1._guess = true;
+  }
+}
+
+void Game_shell::playerScore(Player win, Player lose) {
+  //For single player games, payer gains a point for guessing correctly, loses one for incorrectly guessing
+  if (_multiplayer != true) {
+    win._score ++;
+    lose._score --;
+  }
+  else {
+    win._score ++;
+  }
+  cout << endl << win._name << ": " << win._score << endl;
+  cout << endl << lose._name << ": " << lose._score << endl;
+}
+
+
+/* Game_data */
+
+// Constructor
+Game_data::Game_data() {
+  _partialSol = "";
 }
 
 // Generates the word to guess, either via user input or random selecting a word from words
 void Game_data::genWord() {
-  if (multiplayer) {
-    HideStdinKeystrokes();
-    cout << "\nPlayer 1 - Please provide a word for player 2 to guess:";
-    cin >> _word;
-    ShowStdinKeystrokes();
-    //cout << word;     //DEBUG
-  }
-  else {
-    int ranNum = rand() % FILELENGTH;
-    int lineNum = 0;
-    string line;
-
-    ifstream wordList("words.txt");
-    while(getline(wordList, line)) {
-      ++lineNum;
-      if (lineNum == ranNum) {
-        _word = line;
-        //cout << line;   //DEBUG
-      }
+  int ranNum = rand() % FILELENGTH;
+  int lineNum = 0;
+  string line;
+  ifstream wordList("words.txt");
+  while(getline(wordList, line)) {
+    ++lineNum;
+    if (lineNum == ranNum) {
+      _word = line;
+      //cout << line;   //DEBUG
     }
   }
+  _partialSol.append(_word.size(), '.');
+  //cout << _partialSol;   //DEBUG
+}
+
+void Game_data::addWord(Player guess, Player word) {
+  HideStdinKeystrokes();
+  cout << "\n"  << word._name << " - Please provide a word for " << guess._name << " to guess:";
+  cin >> _word;
+  ShowStdinKeystrokes();
+    //cout << word;     //DEBUG
   _partialSol.append(_word.size(), '.');
   //cout << _partialSol;   //DEBUG
 }
