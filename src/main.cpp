@@ -15,14 +15,19 @@ int main() {
   char restart;
   srand (time(NULL));
   Game_shell game;
-
   for (;;) {
     game.init();
-    // After game ends, offer chance to replay
-    cout << "Play again? (y/N)";
-    cin >> restart;
-    if(restart != 'y') {
+    if (game._quit == true) {
       break;
+    }
+    for (;;) {
+      game.run();
+      // After game ends, offer chance to replay
+      cout << "Play again? (y/N)";
+      cin >> restart;
+      if(restart != 'y') {
+        break;
+      }
     }
   }
   //Clean up - re-enable echo

@@ -31,21 +31,20 @@ array<string, GAMELENGTH> stage = { "",
 /* Game_shell */
 //Constructor
 Game_shell::Game_shell() {
+  _quit = false;
   _p1._score = 0;
   _p1._name = "Player 1";
   _p1._guess = true;
   _p2._score = 0;
   _p2._name = "Player 2";
-  _guess._score = 0;
-  _word._score = 0;
+  _guess = _p1;
+  _word = _p2;
 }
 
 
 void Game_shell::init() {
   int options = 3;
   int select;
-
-  _attempts = 0;
   // Add additional options here (Exit should always be the last option)
   cout <<   "\n!!HANGMAN!!\n\nSelect an option:" <<
             "\n1.Single Player" <<
@@ -60,13 +59,16 @@ void Game_shell::init() {
   }
   else if (select == options) {
     cout << "Exiting..." << endl;
+    _quit = true;
     return;
   }
+}
 
+void Game_shell::run() {
   // Main game element - ideally refactored into a seperate function at a later date
+  _attempts = 0;
   Game_data session;
-  playerSwitch();
-  if (_multiplayer != true) {
+  if (!_multiplayer) {
       session.genWord();
   }
   else {
@@ -75,21 +77,27 @@ void Game_shell::init() {
   while (_attempts < GAMELENGTH - 1) {
     /* Main game logic */
     session.display();
-    if (session.playerGuess() != true) {
+    if (!session.playerGuess()) {
       _attempts++;
       cout << endl << stage.at(_attempts) << endl << endl;
       //cout << _attempts;        //DEBUG
     }
-    if (session.endGame() == true) {
+    if (session.endGame()) {
       cout << "\nCongratulations " << _guess._name << "- You won!!" << endl;
-      playerScore(_guess, _word);
-      session.showAns();
-      return;
+      _guess._score ++;
+      break;
     }
   }
-  cout << "\nGAME OVER " << _guess._name << "- You lose!!!" << endl;
-  playerScore(_word, _guess);
+  if (!session.endGame()) {
+    cout << "\nGAME OVER " << _guess._name << "- You lose!!!" << endl;
+    _word._score ++;
+  }
   session.showAns();
+  // Tidy up and prepare for next game
+  if (_multiplayer) {
+    playerSwitch();
+  }
+  playerScore();
 }
 
 void Game_shell::option(int choice) {
@@ -97,7 +105,8 @@ void Game_shell::option(int choice) {
   switch(choice) {
     case 1 :
       cout << "\nSelected CPU opponent!" << endl;
-      _multiplayer = false;
+      _multiplayer = false;  _word._score = 0;
+
       _p2._active = false;
       _word._active = false;
       break;
@@ -105,6 +114,8 @@ void Game_shell::option(int choice) {
       cout << "\nSelected human opponent!" << endl;
       _multiplayer = true;
       _p2._active = true;
+      break;
+    case 3:
       break;
     default :
       throw "\nUnrecognised input... Congrats, you broke it.\n";
@@ -115,36 +126,33 @@ void Game_shell::option(int choice) {
 void Game_shell::playerSwitch() {
   if (_p1._guess == true) {
 //Update scores
-    _p1._score = _guess._score;
-    _p2._score = _word._score;
-    _guess = _p1;
-    _word = _p2;
+    _p1._score += _guess._score;
+    _p2._score += _word._score;
     //Sets up for next iteration
     _p1._guess = false;
     _p2._guess = true;
+    _guess = _p1;
+    _word = _p2;
   }
   else {
-    _p2._score = _guess._score;
-    _p1._score = _word._score;
-    _guess = _p2;
-    _word = _p1;
+    _p2._score += _guess._score;
+    _p1._score += _word._score;
     //Sets up for next iteration
     _p2._guess = false;
     _p1._guess = true;
+    _guess = _p2;
+    _word = _p1;
   }
+  _guess._score = 0;
+  _word._score = 0;
 }
 
-void Game_shell::playerScore(Player win, Player lose) {
+void Game_shell::playerScore() {
   //For single player games, payer gains a point for guessing correctly, loses one for incorrectly guessing
-  if (_multiplayer != true) {
-    win._score ++;
-    lose._score --;
+  cout << endl << _p1._name << ": " << _p1._score << endl;
+  if (_p2._active) {
+    cout << endl << _p2._name << ": " << _p2._score << endl;
   }
-  else {
-    win._score ++;
-  }
-  cout << endl << win._name << ": " << win._score << endl;
-  cout << endl << lose._name << ": " << lose._score << endl;
 }
 
 
@@ -186,7 +194,7 @@ void Game_data::addWord(Player guess, Player word) {
 void Game_data::display() {
   cout << endl;
   cout << _partialSol << endl;
-  cout << "\nIncorrect guesses: ";
+  cout << "\nIncorrect guesses: " << _incorrect.size() << endl;
   for (unsigned int i = 0; i < _incorrect.size(); i++) {
       cout << _incorrect.at(i) <<", ";
   }

@@ -15,9 +15,11 @@ class Game_shell {
   public:
     Game_shell();
     void init();
+    void run();
     void option(int choice);
     void playerSwitch();
-    void playerScore(Player win, Player lose);
+    void playerScore();
+    bool _quit;
   private:
     int _attempts;
     int _games;
