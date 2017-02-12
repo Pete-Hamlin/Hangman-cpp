@@ -2,6 +2,8 @@
 
 A simple terminal based Hangman game written in C++. Built on Linux. Mostly just an experimental proof of concept, but works pretty nicely as a time killer for the bored.
 
+Game now features a basic scoring system. 1 point is awarded to a player if they guess the word correctly before running out of guesses. In multiplayer games, if the guessing player fails to guess the word, the player who came up with the word also scores a point.
+
 ## Design ##
 
 Game is built around 2 classes which control the whole process:
@@ -32,7 +34,6 @@ To rebuild from source, your system must be set up to compile C++11. Simply cd i
 
 ## Future Work ##
 
-* Score system (vs CPU & vs Human)
 * Difficulty levels (Easy, Medium, Hard)
 * Dynamic FILELENGTH variable (self-updating)
 * Options menu
