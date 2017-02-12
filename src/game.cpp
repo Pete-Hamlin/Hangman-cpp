@@ -212,9 +212,11 @@ bool Game_data::playerGuess() {
   cout << "\n\nPlease guess a letter (Only the first character provided will be read):" << endl;
   cin >> _guess;
   bool ans = false;
+  // Iterate through partial solution and incorrect guesses to check for human failure
   for (unsigned int i = 0; i < _incorrect.size(); i++) {
     if (_guess == _incorrect.at(i)) {
       cout << "\nYou've already guessed that letter!" << endl;
+      ans = true;
     }
   }
   for (unsigned int i = 0; i < _partialSol.size(); i++) {
@@ -227,7 +229,7 @@ bool Game_data::playerGuess() {
       ans = true;
     }
   }
-  if (ans != true) {
+  if (!ans) {
     _incorrect.push_back(_guess);
   }
   return ans;
